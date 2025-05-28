@@ -36,133 +36,92 @@ fun ShopScreen() {
         Product("Vadhiyar Oil 15kg", "3000", R.drawable.dabbo_with_black_bg)
     )
 
-    // State to switch between product list and slip screen
-    var showSlipScreen by remember { mutableStateOf(false) }
-    var slipText by remember { mutableStateOf("") }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        items(products.size) { index ->
+            val product = products[index]
 
-    if (showSlipScreen) {
-        SlipScreen(
-            defaultSlipText = slipText,
-            onSlipSend = { message ->
-                // Open WhatsApp with the slip message
-                val phone = "918160644596"  // Your phone number here
-                val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                context.startActivity(intent)
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Image(
+                        painter = painterResource(id = product.imageRes),
+                        contentDescription = product.name,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
+                        contentScale = ContentScale.Crop
+                    )
 
-                // After sending slip, go back to product list
-                showSlipScreen = false
-            },
-            onBack = {
-                showSlipScreen = false
-            }
-        )
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            items(products.size) { index ->
-                val product = products[index]
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Image(
-                            painter = painterResource(id = product.imageRes),
-                            contentDescription = product.name,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp),
-                            contentScale = ContentScale.Crop
-                        )
+                    Text(
+                        text = product.name,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "₹${product.price}",
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                        Text(
-                            text = product.name,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "₹${product.price}",
-                            fontSize = 18.sp,
-                            color = Color.Gray,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Button(
-                                onClick = {
-                                    val phone = "918160644596"
-
-                                    // UPI link for payment embedded in WhatsApp message
-                                    val upiLink = "upi://pay?pa=vishvas.jadav@ybl&pn=Apnu%20Vadhiyar&tn=${Uri.encode(product.name)}&am=0&cu=INR"
-
-                                    val message = """
-                                        Hello! I want to buy *${product.name}*.
-                                        Price is ₹${product.price}.
-                                        Is there any discount available for me?
-
-                                        After confirmation, you can pay securely via this link:
-                                        $upiLink
-
-                                        Thank you!
-                                    """.trimIndent()
-
-                                    val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                    context.startActivity(intent)
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("WhatsApp")
-                            }
-
-                            Button(
-                                onClick = {
-                                    val upiUri = Uri.parse("upi://pay").buildUpon()
-                                        .appendQueryParameter("pa", "vishvas.jadav@ybl") // UPI ID
-                                        .appendQueryParameter("pn", "Apnu Vadhiyar")
-                                        .appendQueryParameter("tn", product.name)
-                                        .appendQueryParameter("am", "0")
-                                        .appendQueryParameter("cu", "INR")
-                                        .build()
-
-                                    val intent = Intent(Intent.ACTION_VIEW, upiUri)
-                                    context.startActivity(intent)
-                                },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-                            ) {
-                                Text("Pay ₹${product.price}")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Button to show slip screen with default slip text
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Button(
                             onClick = {
-                                slipText = "Payment confirmed for ${product.name}, amount: ₹${product.price}. Thank you!"
-                                showSlipScreen = true
+                                val phone = "916355288823"
+                                val upiLink = "upi://pay?pa=vishvas.jadav@ybl&pn=Apnu%20Vadhiyar&tn=${Uri.encode(product.name)}&am=&cu=INR"
+                                val message = """
+                                    Hello! I want to buy *${product.name}*.
+                                    Price is ₹${product.price}.
+                                    Is there any discount available for me?
+
+                                    After confirmation, you can pay securely via this link:
+                                    $upiLink
+
+                                    Thank you!
+                                """.trimIndent()
+                                val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.weight(1f)
                         ) {
-                            Text("Show Slip")
+                            Text("WhatsApp")
+                        }
+
+                        Button(
+                            onClick = {
+                                val upiUri = Uri.parse("upi://pay").buildUpon()
+                                    .appendQueryParameter("pa", "vishvas.jadav@ybl")
+                                    .appendQueryParameter("pn", "Apnu Vadhiyar")
+                                    .appendQueryParameter("tn", product.name)
+                                    .appendQueryParameter("am", "") // Editable amount by user
+                                    .appendQueryParameter("cu", "INR")
+                                    .build()
+                                val intent = Intent(Intent.ACTION_VIEW, upiUri)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        ) {
+                            Text("Pay")
                         }
                     }
                 }
