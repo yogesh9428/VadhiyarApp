@@ -1,4 +1,4 @@
-package com.vadhiyar.auth_service.dto;
+package com.vadhiyar.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
