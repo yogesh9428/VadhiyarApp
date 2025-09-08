@@ -30,6 +30,10 @@ public class JwtService {
        this.expiryMinutes = expiryMinutes;
     }
 
+    public SecretKey getKey(){
+        return key;
+    }
+
     public String generateToken(String subjectPhone){
         Instant now = Instant.now();
         String token = Jwts.builder()
