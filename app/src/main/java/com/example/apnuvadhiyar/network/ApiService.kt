@@ -8,9 +8,6 @@ import com.example.apnuvadhiyar.data.SendOtpRequest
 import com.example.apnuvadhiyar.data.VerifyOtpRequest
 import com.example.apnuvadhiyar.data.VerifyOtpResponse
 
-//data class SendOtpRequest(val phone: String)
-//data class VerifyOtpRequest(val phone: String, val otp: String)
-//data class VerifyOtpResponse(val token: String)
 
 interface ApiService {
     @POST("/auth/request-otp")

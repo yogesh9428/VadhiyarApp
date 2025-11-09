@@ -64,20 +64,18 @@ fun MainScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Read token dynamically
-    var token by remember { mutableStateOf<String?>(null) }
+    // Keep token in state so recomposition happens when it changes
+    var token by remember { mutableStateOf<String?>(TokenManager.getToken(context)) }
 
-    LaunchedEffect(Unit) {
-        token = TokenManager.getToken(context)
-    }
-
-    // Decide start destination
+    // Decide initial start destination
     val startDestination = if (token.isNullOrEmpty()) "login" else Screen.Home.route
 
     Scaffold(
         bottomBar = {
-            // Show bottom bar only for logged-in users
-            if (!token.isNullOrEmpty()) BottomNavigationBar(navController)
+            // Show bottom bar only if user is logged in
+            if (!token.isNullOrEmpty()) {
+                BottomNavigationBar(navController)
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -85,21 +83,27 @@ fun MainScreen() {
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // LoginScreen for users without token
+            // -------------------
+            // Login Screen
+            // -------------------
             composable("login") {
                 LoginScreen(onLoginSuccess = {
-                    // Save token and navigate to Home
+                    // Refresh token after login success
                     token = TokenManager.getToken(context)
+                    // Navigate to Home and clear login from backstack
                     navController.navigate(Screen.Home.route) {
                         popUpTo("login") { inclusive = true }
                     }
                 })
             }
 
-            // Main app screens
+            // -------------------
+            // Main Screens
+            // -------------------
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Shop.route) { ShopScreen() }
             composable(Screen.Community.route) { CommunityScreen() }
         }
     }
 }
+
