@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import com.example.apnuvadhiyar.screens.LoginScreen
+import com.example.apnuvadhiyar.screens.login.LoginScreen
 import com.example.apnuvadhiyar.screens.community.CommunityScreen
 import com.example.apnuvadhiyar.screens.home.HomeScreen
 import com.example.apnuvadhiyar.screens.shop.ShopScreen
@@ -67,8 +67,14 @@ fun MainScreen() {
     // Keep token in state so recomposition happens when it changes
     var token by remember { mutableStateOf<String?>(TokenManager.getToken(context)) }
 
-    // Decide initial start destination
-    val startDestination = if (token.isNullOrEmpty()) "login" else Screen.Home.route
+    LaunchedEffect(Unit) {
+        token = TokenManager.getToken(context)
+    }
+
+    // ✅ Make startDestination recomposition-safe
+    val startDestination by remember(token) {
+        mutableStateOf(if (token.isNullOrEmpty()) "login" else Screen.Home.route)
+    }
 
     Scaffold(
         bottomBar = {

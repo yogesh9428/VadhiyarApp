@@ -43,6 +43,7 @@ public class JwtService {
                 .signWith(key) // no algorithm needed—it's inferred
                 .compact();
         log.info("JWT token is issued for phone " , subjectPhone);
+        log.info(" JWT GENERATED: {}", token);
         return token;
     }
 }
